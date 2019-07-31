@@ -1,0 +1,50 @@
+Question 0
+Reading Going deeper with convolutions I came across a DepthConcat layer, a building block of the proposed inception modules, 
+which combines the output of multiple tensors of varying size. The authors call this "Filter Concatenation". 
+There seems to be an implementation for Torch, but I don't really understand, what it does. Can someone explain in simple words?
+Question 1
+동일 합성공이면padding을 하지 않는다
+Question 2
+3x3 2번을 겹치면 5x5 영역에 대한 특징을 뽑을 수 있고, 3번 겹쳐서 사용하면 7x7 영역에 대한 특징을 뽑아낼 수 있음
+stride가 2라고 가정했을때 2n+1인가...
+Question 3 오른쪽 이미지에서 왜 하필 depth가 5지
+
+Answer 0
+
+I had the same question in mind as you reading that white paper and the resources you have referenced have helped me come up with an implementation.
+
+In the Torch code you referenced, it says:
+
+--[[ DepthConcat ]]--
+-- Concatenates the output of Convolutions along the depth dimension
+-- (nOutputFrame). This is used to implement the DepthConcat layer
+-- of the Going deeper with convolutions paper :
+The word "depth" in Deep learning is a little ambiguous. Fortunately this SO Answer provides some clarity:
+
+In Deep Neural Networks the depth refers to how deep the network is but in this context, the depth is used for visual recognition and it translates to the 3rd dimension of an image.
+
+In this case you have an image, and the size of this input is 32x32x3 which is (width, height, depth). The neural network should be able to learn based on this parameters as depth translates to the different channels of the training images.
+
+So DepthConcat concatenates tensors along the depth dimension which is the last dimension of the tensor and in this case the 3rd dimension of a 3D tensor.
+
+DepthConcat needs to make the tensors the same in all dimensions but the depth dimension, as the Torch code says:
+
+-- The normal Concat Module can't be used since the spatial dimensions
+-- of tensors to be concatenated may have different values. To deal with
+-- this, we select the largest spatial dimensions and add zero-padding
+-- around the smaller dimensions.
+e.g.
+
+A = tensor of size (14, 14, 2)
+B = tensor of size (16, 16, 3)
+result = DepthConcat([A, B])
+where result with have a height of 16, a width of 16 and a depth of 5 (2 + 3). 
+enter image description here
+
+In the diagram above, we see a picture of the DepthConcat result tensor, where the white area is the zero padding, the red is the A tensor and the green is the B tensor.
+
+Here's the pseudo code for DepthConcat in this example:
+
+Look at tensor A and tensor B and find the biggest spatial dimensions, which in this case would be tensor B's 16 width and 16 height sizes. Since tensor A is too small and doesn't match the spatial dimensions of Tensor B's, it will need to be padded.
+Pad the spatial dimensions of tensor A with zeros by adding zeros to the first and second dimensions making the size of tensor A (16, 16, 2).
+Concatenate padded tensor A with tensor B along the depth (3rd) dimension.
