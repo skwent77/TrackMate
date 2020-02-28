@@ -22,7 +22,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/params"
 	"github.com/cosmos/cosmos-sdk/x/slashing"
 	"github.com/cosmos/cosmos-sdk/x/staking"
-	
+
 	"github.com/dreamer-epitech/dreamer-storage/x/nameservice"
 	"github.com/dreamer-epitech/dreamer-storage/x/storage"
 )

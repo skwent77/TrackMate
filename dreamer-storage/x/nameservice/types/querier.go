@@ -5,6 +5,8 @@ import "strings"
 // Query Result Payload for a resolve query
 type QueryResResolve struct {
 	Value string `json:"value"`
+	//package json impolements encoding and decoding of JSON as defined in RFC 
+	//mapping between JSON and Go values is described in documentation
 }
 
 // implement fmt.Stringer
